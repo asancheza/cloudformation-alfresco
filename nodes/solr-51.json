@@ -1,0 +1,58 @@
+{
+    "name": "solr",
+    "alfresco" : {
+        "use_libreoffice_os_repo" : true,
+        "db_ssl_enabled" : true,
+        "skip_certificate_creation" : true,
+        "rmi_server_hostname" : "localhost",
+        "public_hostname" : "@@FQDN@@",
+        "log.json.enabled" : false,
+        "components" : ["repo","solr"],
+        "ssl_enabled" : false,
+        "properties" : {
+            "alfresco.cluster.enabled" : false,
+            "s3.accessKey" : "@@AWS_ACCESS_KEY@@",
+            "s3.secretKey" : "@@AWS_SECRET_KEY@@",
+            "db.host" : "@@DB_HOST@@",
+            "db.dbname" : "@@DB_NAME@@",
+            "db.username" : "@@DB_USERNAME@@",
+            "db.password" : "@@DB_PASSWORD@@",
+            "db.prefix" : "mysql",
+            "s3.bucketName" : "@@CONTENTSTORE_S3_BUCKET@@",
+            "s3.bucketLocation" : "@@AWS_REGION@@",
+            "solr.port" : "8090",
+            "alfresco_user_store.adminpassword" : "@@ALFRESCO_PASSWORD@@"
+        },
+        "repo_tomcat_instance" : {
+            "xmx_ratio" : 0.5
+        },
+        "solr_tomcat_instance" : {
+            "xmx_ratio" : 0.5
+        },
+        "workspace-solrproperties" : {
+            "alfresco.corePoolSize" : 4
+        }
+    },
+    "tomcat" : {
+        "cleaner.minutes.interval" : 1,
+        "jvm_route" : "@@JVM_ROUTE@@"
+    },
+    "commons" : {
+      "ec2_tags" : {
+        "haproxy_backends" : "solr",
+        "jvm_route" : "@@JVM_ROUTE@@",
+        "status" : "complete"
+      }
+    },
+    "artifacts" : {
+        "alfresco-s3-connector" : {
+            "enabled" : true,
+            "path" : "/root/alfresco-s3-connector.amp",
+            "destination" : "/usr/share/tomcat/amps",
+            "user" : "tomcat",
+            "group" : "tomcat",
+            "type" : "amp"
+        }
+    },
+    "run_list": ["commons::ec2-tagging","artifact-deployer::default","alfresco::apply-amps", "alfresco::redeploy"]
+}

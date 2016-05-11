@@ -1,0 +1,81 @@
+{
+    "name": "share",
+    "nginx" : {
+      "use_nossl_config" : true
+    },
+    "alfresco" : {
+        "use_libreoffice_os_repo" : true,
+        "db_ssl_enabled" : true,
+        "skip_certificate_creation" : true,
+        "rmi_server_hostname" : "localhost",
+        "public_hostname" : "@@FQDN@@",
+        "log.json.enabled" : false,
+        "public_protocol" : "http",
+        "public_portssl" : "80",
+        "components" : ["repo","share"],
+        "ssl_enabled" : false,
+        "shareproperties" : {
+          "hz_aws_enabled" : true
+        },
+        "properties" : {
+            "jodconverter.officeHome" : "/usr/lib64/libreoffice",
+            "s3.accessKey" : "@@AWS_ACCESS_KEY@@",
+            "s3.secretKey" : "@@AWS_SECRET_KEY@@",
+            "hz_aws_access_key" : "@@AWS_ACCESS_KEY@@",
+            "hz_aws_secret_key" : "@@AWS_SECRET_KEY@@",
+            "db.host" : "@@DB_HOST@@",
+            "db.dbname" : "@@DB_NAME@@",
+            "db.username" : "@@DB_USERNAME@@",
+            "db.password" : "@@DB_PASSWORD@@",
+            "db.prefix" : "mysql",
+            "s3.bucketName" : "@@CONTENTSTORE_S3_BUCKET@@",
+            "s3.bucketLocation" : "@@AWS_REGION@@",
+            "hz_aws_enabled" : true,
+            "hz_aws_sg_name" : "@@AWS_SG_NAME@@",
+            "hz_aws_tag_key" : "haproxy-role",
+            "hz_aws_tag_value" : "share",
+            "alfresco_user_store.adminpassword" : "@@ALFRESCO_PASSWORD@@"
+        },
+        "repo_tomcat_instance" : {
+            "xmx_ratio" : 0.5
+        },
+        "share_tomcat_instance" : {
+            "xmx_ratio" : 0.5
+        }
+    },
+    "tomcat" : {
+        "cleaner.minutes.interval" : 1,
+        "jvm_route" : "@@JVM_ROUTE@@"
+    },
+    "haproxy" : {
+        "ec2" : {
+            "install_haproxy_discovery" : true
+        }
+    },
+    "commons" : {
+      "ec2_tags" : {
+        "haproxy_backends" : "share",
+        "jvm_route" : "@@JVM_ROUTE@@"
+      },
+      "ec2_discovery" : {
+        "query_tags" : {
+          "aws:cloudformation:stack-name" : "@@STACK_NAME@@",
+          "status" : "complete"
+        }
+      }
+    },
+    "artifacts" : {
+        "ssl-db-creds" :{
+            "enabled": true
+        },
+        "alfresco-s3-connector" : {
+            "enabled" : true,
+            "path" : "/root/alfresco-s3-connector.amp",
+            "destination" : "/usr/share/tomcat/amps",
+            "user" : "tomcat",
+            "group" : "tomcat",
+            "type" : "amp"
+        }
+    },
+    "run_list": ["commons::ec2-tagging","artifact-deployer::default","alfresco::apply-amps", "alfresco::redeploy"]
+}
